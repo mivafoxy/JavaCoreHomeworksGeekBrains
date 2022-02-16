@@ -9,6 +9,19 @@ import Obstacles.Wall;
 
 import java.util.Random;
 
+ /*
+1. Разобраться с имеющимся кодом.
+
+
+В итоге должно получиться похожее:
+public static void main(String[] args) {
+Course c = new Course(...); // Создаем полосу препятствий
+Team team = new Team(...); // Создаем команду
+c.doIt(team); // Просим команду пройти полосу
+team.showResults(); // Показываем результаты
+}
+  */
+
 public class Main {
     private static final int POOL_DISTANCE = 100;
     private static final int RACETRACK_DISTANCE = 100;
@@ -30,6 +43,10 @@ public class Main {
         };
     }
 
+    /*
+    Создание игроков вынесено в отдельный метод, а не осталось в конструкторе класса Course, код необходимо декомпозировать,
+    и конструктор оставлять МАКСИМАЛЬНО простым.
+     */
     public static Player[] makePlayers() {
         return new Player[] {
             new Player("Петя", new PlayerAction[] { getSwimAction(), getJumpAction() }),
@@ -38,6 +55,10 @@ public class Main {
             new Player("Лена", new PlayerAction[] { getSwimAction() }),
         };
     }
+
+    /*
+    Ниже создаются действия, которые могут выполнять игроки. Возможности этих игроков рандомизируются.
+     */
 
     public static PlayerAction getSwimAction() {
         Random random = new Random();
@@ -57,21 +78,3 @@ public class Main {
         return runAction;
     }
 }
- /*
-1. Разобраться с имеющимся кодом.
-2. Добавить класс Team, который будет содержать:
-название команды;
-массив из четырех участников — в конструкторе можно сразу всех участников указывать);
-метод для вывода информации о членах команды, прошедших дистанцию;
-метод вывода информации обо всех членах команды.
-3. Добавить класс Course (полоса препятствий), в котором будут находиться:
-массив препятствий;
-метод, который будет просить команду пройти всю полосу.
-В итоге должно получиться похожее:
-public static void main(String[] args) {
-Course c = new Course(...); // Создаем полосу препятствий
-Team team = new Team(...); // Создаем команду
-c.doIt(team); // Просим команду пройти полосу
-team.showResults(); // Показываем результаты
-}
-  */

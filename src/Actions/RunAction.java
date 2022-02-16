@@ -14,6 +14,9 @@ public class RunAction implements PlayerAction {
 
     @Override
     public void pass(Obstacle obstacle) {
+        /*
+        Проверка препятствия - если оно нужного типа, его можно преодолеть.
+         */
         if (obstacle instanceof Racetrack) {
             Racetrack racetrack = (Racetrack) obstacle;
             if (racetrack.getDistance() <= maxDistance) {
