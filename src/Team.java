@@ -10,7 +10,7 @@ import Obstacles.Obstacle;
 public class Team {
     private final String title;
     /*
-    массив из четырех участников
+    массив из участников
      */
     private final Player[] players;
 
@@ -41,7 +41,8 @@ public class Team {
     }
 
     /*
-    Метод преодоления препятствия. Препятствие передается каждому игроку, и если тот имеет возможность его пройти (зависит от
+    Метод преодоления препятствия. Препятствие передается каждому игроку,
+    и если тот имеет возможность его пройти (зависит от
     массива PlayersAction[]) - игрок пытается преодолеть препятствие.
      */
     public void overcomeObstacle(Obstacle obstacle) {

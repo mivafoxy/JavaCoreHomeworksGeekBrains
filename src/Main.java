@@ -10,9 +10,6 @@ import Obstacles.Wall;
 import java.util.Random;
 
  /*
-1. Разобраться с имеющимся кодом.
-
-
 В итоге должно получиться похожее:
 public static void main(String[] args) {
 Course c = new Course(...); // Создаем полосу препятствий

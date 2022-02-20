@@ -1,9 +1,8 @@
 package Actions;
 
-import Obstacles.Obstacle;
 import Obstacles.Pool;
 
-public class SwimAction implements PlayerAction {
+public class SwimAction implements PlayerAction<Pool> { // SwimAction теперь явно работает с Pool, и instanceOf не нужен
     private int maxDistance;
     private ActionState actionState;
 
@@ -13,16 +12,13 @@ public class SwimAction implements PlayerAction {
     }
 
     @Override
-    public void pass(Obstacle obstacle) {
-        if (obstacle instanceof Pool) {
-            Pool pool = (Pool) obstacle;
-            if (pool.getDistance() <= maxDistance) {
-                System.out.println("Игрок проплыл.");
-                actionState = ActionState.VICTORY;
-            } else {
-                System.out.println("Игрок не смог проплыть. Может проплыть максимум: " + maxDistance);
-                actionState = ActionState.DEFEAT;
-            }
+    public void pass(Pool obstacle) {
+        if (obstacle.getDistance() <= maxDistance) {
+            System.out.println("Игрок проплыл.");
+            actionState = ActionState.VICTORY;
+        } else {
+            System.out.println("Игрок не смог проплыть. Может проплыть максимум: " + maxDistance);
+            actionState = ActionState.DEFEAT;
         }
     }
 

@@ -2,7 +2,7 @@ package Actions;
 
 import Obstacles.*;
 
-public class JumpAction implements PlayerAction {
+public class JumpAction implements PlayerAction<Wall> { // JumpAction теперь явно работает с Wall, и instanceOf не нужен
     private int maxDistance;
     private ActionState actionState;
 
@@ -12,16 +12,13 @@ public class JumpAction implements PlayerAction {
     }
 
     @Override
-    public void pass(Obstacle obstacle) {
-        if (obstacle instanceof Wall) {
-            Wall wall = (Wall) obstacle;
-            if (wall.getDistance() <= maxDistance) {
-                System.out.println("Игрок прыгнул.");
-                actionState = ActionState.VICTORY;
-            } else {
-                System.out.println("Игрок не смог прыгнуть. Может совершить прыжок максимум на " + maxDistance);
-                actionState = ActionState.DEFEAT;
-            }
+    public void pass(Wall obstacle) {
+        if (obstacle.getDistance() <= maxDistance) {
+            System.out.println("Игрок прыгнул.");
+            actionState = ActionState.VICTORY;
+        } else {
+            System.out.println("Игрок не смог прыгнуть. Может совершить прыжок максимум на " + maxDistance);
+            actionState = ActionState.DEFEAT;
         }
     }
 
