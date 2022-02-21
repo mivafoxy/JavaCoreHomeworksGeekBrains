@@ -1,77 +1,57 @@
-import Actions.JumpAction;
-import Actions.PlayerAction;
-import Actions.RunAction;
-import Actions.SwimAction;
-import Obstacles.Obstacle;
-import Obstacles.Pool;
-import Obstacles.Racetrack;
-import Obstacles.Wall;
-
-import java.util.Random;
-
- /*
-В итоге должно получиться похожее:
-public static void main(String[] args) {
-Course c = new Course(...); // Создаем полосу препятствий
-Team team = new Team(...); // Создаем команду
-c.doIt(team); // Просим команду пройти полосу
-team.showResults(); // Показываем результаты
-}
-  */
-
 public class Main {
-    private static final int POOL_DISTANCE = 100;
-    private static final int RACETRACK_DISTANCE = 100;
-    private static final int WALL_DISTANCE = 5;
-
+    /*
+    1. Напишите метод, на вход которого подаётся двумерный строковый массив размером 4х4.
+     При подаче массива другого размера необходимо бросить исключение MyArraySizeException.
+    2. Далее метод должен пройтись по всем элементам массива, преобразовать в int и просуммировать.
+    Если в каком-то элементе массива преобразование не удалось (например, в ячейке лежит символ или текст вместо числа),
+    должно быть брошено исключение MyArrayDataException с детализацией, в какой именно ячейке лежат неверные данные.
+    3. В методе main() вызвать полученный метод,
+    обработать возможные исключения MyArraySizeException и MyArrayDataException и вывести результат расчета.
+     */
     public static void main(String[] args) {
-        Course course = new Course(makeObstacles());
-        Player[] players = makePlayers();
-        Team team = new Team("GeekBrains", players);
-        course.doIt(team);
-        team.printWinners();
-    }
+        String[][] wrongArr = new String[4][4];
 
-    public static Obstacle[] makeObstacles() {
-        return new Obstacle[]{
-            new Pool(POOL_DISTANCE),
-            new Racetrack(RACETRACK_DISTANCE),
-            new Wall(WALL_DISTANCE)
+        try {
+            getSumOfElementsFrom(wrongArr);
+        } catch (MyArraySizeException | MyArrayDataException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        String[][] goodArr = {
+            {"1", "2", "3", "4"},
+            {"1", "2", "3", "4"},
+            {"1", "2", "3", "4"},
+            {"1", "2", "3", "4"}
         };
+
+        try {
+            System.out.println(getSumOfElementsFrom(goodArr));
+        } catch (MyArraySizeException | MyArrayDataException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
-    /*
-    Создание игроков вынесено в отдельный метод, а не осталось в конструкторе класса Course, код необходимо декомпозировать,
-    и конструктор оставлять МАКСИМАЛЬНО простым.
-     */
-    public static Player[] makePlayers() {
-        return new Player[] {
-            new Player("Петя", new PlayerAction[] { getSwimAction(), getJumpAction() }),
-            new Player("Ваня", new PlayerAction[] { getRunAction() }),
-            new Player("Аня", new PlayerAction[] { getRunAction(), getJumpAction(), getSwimAction() }),
-            new Player("Лена", new PlayerAction[] { getSwimAction() }),
-        };
-    }
+    public static int getSumOfElementsFrom(String[][] array) throws MyArraySizeException, MyArrayDataException {
+        if (array.length != 4) {
+            throw new MyArraySizeException();
+        }
 
-    /*
-    Ниже создаются действия, которые могут выполнять игроки. Возможности этих игроков рандомизируются.
-     */
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].length != 4) {
+                throw new MyArraySizeException();
+            }
 
-    public static PlayerAction getSwimAction() {
-        Random random = new Random();
-        SwimAction swimAction = new SwimAction(random.nextInt(POOL_DISTANCE + 50));
-        return swimAction;
-    }
+            for (int j = 0; j < array[i].length; j++) {
+                try {
+                    int element = Integer.parseInt(array[i][j]);
+                    sum += element;
+                } catch (NumberFormatException exception) {
+                    throw new MyArrayDataException(i, j);
+                }
+            }
+        }
 
-    public static PlayerAction getJumpAction() {
-        Random random = new Random();
-        JumpAction jumpAction = new JumpAction(random.nextInt(WALL_DISTANCE + 2));
-        return jumpAction;
-    }
-
-    public static PlayerAction getRunAction() {
-        Random random = new Random();
-        RunAction runAction = new RunAction(random.nextInt(RACETRACK_DISTANCE + 50));
-        return runAction;
+        return sum;
     }
 }
