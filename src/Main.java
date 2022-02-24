@@ -61,12 +61,18 @@ public class Main {
     1. Написать метод, который меняет два элемента массива местами (массив может быть любого ссылочного типа);
      */
     public static <T>void changeArrayElements(T[] array, int firstIndex, int secondIndex) {
-        if (firstIndex < 0 || array.length <= firstIndex || secondIndex < 0 || array.length <= secondIndex) {
+        if (firstIndex < 0 || array.length <= firstIndex || secondIndex < 0 || array.length <= secondIndex || array.length < 2) {
             System.out.println("Некорректные индексы");
+            return;
         }
 
-        T arrayElement = array[firstIndex];
-        array[firstIndex] = array[secondIndex];
-        array[secondIndex] = arrayElement;
+        // Если if-а не будет
+        try {
+            T arrayElement = array[firstIndex];
+            array[firstIndex] = array[secondIndex];
+            array[secondIndex] = arrayElement;
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            System.out.println("Некорректные индексы");
+        }
     }
 }
