@@ -1,78 +1,82 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+
 /*
-1. Написать метод, который меняет два элемента массива местами (массив может быть любого ссылочного типа);
-2. Задача:
-Даны классы abstractFruit.Fruit, abstractFruit.Apple extends abstractFruit.Fruit, abstractFruit.Orange extends abstractFruit.Fruit;
-Класс fruits.Box, в который можно складывать фрукты.
-Коробки условно сортируются по типу фрукта, поэтому в одну коробку нельзя сложить и яблоки, и апельсины;
-Для хранения фруктов внутри коробки можно использовать ArrayList;
-Сделать метод getWeight(),
-который высчитывает вес коробки,
-зная вес одного фрукта и их количество: вес яблока – 1.0f, апельсина – 1.5f (единицы измерения не важны);
-Внутри класса fruits.Box сделать метод compare(),
-который позволяет сравнить текущую коробку с той, которую подадут в compare() в качестве параметра.
-true – если их массы равны, false в противоположном случае. Можно сравнивать коробки с яблоками и апельсинами;
-Написать метод, который позволяет пересыпать фрукты из текущей коробки в другую.
-Помним про сортировку фруктов: нельзя яблоки высыпать в коробку с апельсинами.
-Соответственно, в текущей коробке фруктов не остается, а в другую перекидываются объекты, которые были в первой;
-Не забываем про метод добавления фрукта в коробку.
+1. Создать массив с набором слов (10-20 слов, должны встречаться повторяющиеся).
+Найти и вывести список уникальных слов, из которых состоит массив (дубликаты не считаем).
+Посчитать, сколько раз встречается каждое слово.
+2. Написать простой класс «Телефонный Справочник»,
+ который хранит в себе список фамилий и телефонных номеров.
+  В этот телефонный справочник с помощью метода add() можно добавлять записи,
+  а с помощью метода get() искать номер телефона по фамилии.
+  Следует учесть, что под одной фамилией может быть несколько телефонов (в случае однофамильцев),
+  тогда при запросе такой фамилии должны выводиться все телефоны.
+Желательно не добавлять лишний функционал (дополнительные поля (имя, отчество, адрес),
+взаимодействие с пользователем через консоль и т.д).
+Консоль использовать только для вывода результатов проверки телефонного справочника.
  */
-
-import fruits.Apple;
-import fruits.Box;
-import fruits.Orange;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
-        String[] arr = {"1", "2"};
-        changeArrayElements(arr, 0, 1);
-        System.out.println(Arrays.toString(arr));
+        String[] myWords = {
+            "Яблоко", "Апельсин", "Автомобиль", "Кошка", "Собака",
+            "Собака", "Линза", "Очки", "Собака", "Линза",
+            "Мопед", "Автомобиль", "Число", "Номер", "Кот",
+            "Система", "Мультипаспорт", "Легионер", "Макака", "Апельсин"
+        };
 
-        Box<Apple> appleBox = new Box<>(makeNewApples(10));
-        Box<Orange> orangeBox = new Box<>(makeNewOranges(10));
-        Box<Orange> secondOrangeBox = new Box<>(makeNewOranges(0));
+        countUniqueWordsIn(myWords);
 
-        appleBox.compare(orangeBox);
-        appleBox.compare(secondOrangeBox);
-        orangeBox.transferTo(secondOrangeBox);
-        appleBox.compare(orangeBox);
-        appleBox.compare(secondOrangeBox);
-    }
+        System.out.println("Работа с телефонной книгой");
 
-    public static ArrayList<Apple> makeNewApples(int count) {
-        ArrayList<Apple> fruits = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            fruits.add(new Apple());
-        }
-        return fruits;
-    }
+        PhoneBook phoneBook = new PhoneBook();
+        phoneBook.appendNewPhoneToName("8(999)999-99-99", "Малахов");
+        phoneBook.appendNewPhoneToName("8(988)888-88-88", "Костин");
+        phoneBook.appendNewPhoneToName("8(977)777-77-77", "Костин");
+        phoneBook.appendNewPhoneToName("8(966)666-66-66", "Иванов");
+        phoneBook.appendNewPhoneToName("8(955)555-55-55", "Михайлюк");
+        phoneBook.appendNewPhoneToName("8(944)444-44-44", "Антропов");
+        phoneBook.appendNewPhoneToName("8(933)333-33-33", "Михайлюк");
+        phoneBook.appendNewPhoneToName("8(922)222-22-22", "Левицкий");
+        phoneBook.appendNewPhoneToName("8(911)111-11-11", "Барышев");
 
-    public static ArrayList<Orange> makeNewOranges(int count) {
-        ArrayList<Orange> fruits = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            fruits.add(new Orange());
-        }
-        return fruits;
+        System.out.println(phoneBook.getPhonesBy("Малахов"));
+        System.out.println(phoneBook.getPhonesBy("Костин"));
+        System.out.println(phoneBook.getPhonesBy("Иванов"));
+        System.out.println(phoneBook.getPhonesBy("Михайлюк"));
+        System.out.println(phoneBook.getPhonesBy("Антропов"));
+        System.out.println(phoneBook.getPhonesBy("Левицкий"));
+        System.out.println(phoneBook.getPhonesBy("Барышев"));
+
     }
 
     /*
-    1. Написать метод, который меняет два элемента массива местами (массив может быть любого ссылочного типа);
+    1. Создать массив с набором слов (10-20 слов, должны встречаться повторяющиеся).
+       Найти и вывести список уникальных слов, из которых состоит массив (дубликаты не считаем).
+       Посчитать, сколько раз встречается каждое слово.
      */
-    public static <T>void changeArrayElements(T[] array, int firstIndex, int secondIndex) {
-        if (firstIndex < 0 || array.length <= firstIndex || secondIndex < 0 || array.length <= secondIndex || array.length < 2) {
-            System.out.println("Некорректные индексы");
-            return;
+    public static void countUniqueWordsIn(String[] array) {
+        HashMap<String, Integer> wordsToCount = new HashMap<>(); // Словарь для хранения слова и того, сколько раз оно встречается.
+        final int firstTimeSee = 1;
+        for (String word : array) {
+            if (wordsToCount.containsKey(word)) {   // нужно положить слово в хэщмеп. Если ключ в виде слова уже есть,
+                int count = wordsToCount.get(word); // считается, что слово уже в мапе упоминалось, надо инкрементировать
+                wordsToCount.put(word, count + 1);  // его счётчик
+            } else {
+                wordsToCount.put(word, firstTimeSee); // Иначе, если слово встречается впервые, кладём его в мэпу со значением
+            }                              // счётчика, равного единице.
         }
 
-        // Если if-а не будет
-        try {
-            T arrayElement = array[firstIndex];
-            array[firstIndex] = array[secondIndex];
-            array[secondIndex] = arrayElement;
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            System.out.println("Некорректные индексы");
+        System.out.println("Вывод уникальных слов в массиве");
+        for (Map.Entry<String, Integer> wordEntry : wordsToCount.entrySet()) {
+            if (wordEntry.getValue() == firstTimeSee) {
+                System.out.println(wordEntry.getKey());
+            }
+        }
+
+        System.out.println("Вывод повторений слов в массиве");
+        for (Map.Entry<String, Integer> wordEntry : wordsToCount.entrySet()) {
+            System.out.println(wordEntry.getKey() + " : " + wordEntry.getValue());
         }
     }
 }
