@@ -6,14 +6,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Main {
-    private final static String WeatherURL =  "http://dataservice.accuweather.com/forecasts/v1/daily/5day/294021"; // URL для запроса погоды на 5 дней в СПБ.
-    private final static String API_KEY = "?apikey=ТУТ_НУЖНО_ВСТАВИТЬ_КЛЮЧ_API"; // API ключ для запроса. См. гайд, как его получить и вставить.
+    private final static String WeatherURL =  "http://dataservice.accuweather.com/forecasts/v1/daily/5day/295212"; // URL для запроса погоды на 5 дней в СПБ.
+    private final static String API_KEY = "?apikey=4uT3CCtP3oRbsLmC8Uvz4WZF5hmcaCun"; // API ключ для запроса. См. гайд, как его получить и вставить.
+    private final static String IS_METRIC = "&metric=true";
 
     public static void main(String[] args) {
         try {
-            URL weatherUrl = new URL(WeatherURL+API_KEY); // Сформировали URL для запроса к серверу.
-            HttpURLConnection urlConnection = (HttpURLConnection) weatherUrl.openConnection(); // К серверу постучались.
-            if (urlConnection.getResponseCode() == 200) { // getResponseCode отправляет запрос к серверу по указанному нами URL, который по факту является GET запросом.
+            // Сформировали URL для запроса к серверу.
+            URL weatherUrl = new URL(WeatherURL+API_KEY + IS_METRIC);
+            // К серверу постучались.
+            HttpURLConnection urlConnection = (HttpURLConnection) weatherUrl.openConnection();
+            // getResponseCode отправляет запрос к серверу по указанному нами URL, который по факту является GET запросом.
+            if (urlConnection.getResponseCode() == 200) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) { // Как было на предыдущих занятиях, чтобы считать данные из
                     StringBuilder responseContent = new StringBuilder();                                                  // сети, необходимо открыть Stream для их чтения.
                     String line = "";                                                                                     // Тут мы используем для работы с сетью BufferedReader.
