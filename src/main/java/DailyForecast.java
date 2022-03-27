@@ -34,6 +34,39 @@ public class DailyForecast {
             .getString("IconPhrase");
     }
 
+    public DailyForecast(
+        String date,
+        double minimumTemperature,
+        double maximumTemperature,
+        String dayTextDescription,
+        String nightTextDescription) {
+        this.date = date;
+        this.minimumTemperature = minimumTemperature;
+        this.maximumTemperature = maximumTemperature;
+        this.dayTextDescription = dayTextDescription;
+        this.nightTextDescription = nightTextDescription;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public double getMinimumTemperature() {
+        return minimumTemperature;
+    }
+
+    public double getMaximumTemperature() {
+        return maximumTemperature;
+    }
+
+    public String getDayTextDescription() {
+        return dayTextDescription;
+    }
+
+    public String getNightTextDescription() {
+        return nightTextDescription;
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
