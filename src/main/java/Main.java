@@ -1,70 +1,114 @@
-import com.sun.deploy.util.ArrayUtil;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
-    private final static String WeatherURL =  "http://dataservice.accuweather.com/forecasts/v1/daily/5day/295212"; // URL для запроса погоды на 5 дней в СПБ.
-    private final static String API_KEY = "?apikey=4uT3CCtP3oRbsLmC8Uvz4WZF5hmcaCun"; // API ключ для запроса. См. гайд, как его получить и вставить.
-    private final static String IS_METRIC = "&metric=true";
-
     public static void main(String[] args) {
-        String forecastJson = load5DayForecastOrNull();
+        // Создаем набор студентов так, чтобы можно было проверить следующие 3 функции.
+        List<Student> students = makeStudents();
 
-        if (forecastJson != null) {
-            // Получили данные с сервера
-            StringReader forecastJsonReader = new StringReader(forecastJson);
-            JsonReader jsonReader = Json.createReader(forecastJsonReader);
-            JsonObject weatherResponseJson = jsonReader.readObject();
-            WeatherResponse weatherResponse = new WeatherResponse(weatherResponseJson);
-            System.out.println(weatherResponse);
+        // Поиск уникальных курсов.
+        System.out.println("Уникальные курсы");
+        System.out.println(filterUniqueCoursesFrom(students));
 
-            // Записали в БД
-            RepositoryService.createTable();
+        // Поиск самых любознательных
+        System.out.println("Любознательные");
+        System.out.println(getTopThreeInquisitiveStudents(students));
 
-            for (DailyForecast dailyForecast : weatherResponse.getDailyForecasts()) {
-                RepositoryService.putWeatherIntoDb(dailyForecast);
-            }
-
-            List<DailyForecast> dailyForecasts = RepositoryService.loadDailyForecasts();
-            System.out.println(dailyForecasts);
-        } else {
-            System.out.println("Не удалось прочитать данные с сервера.");
-        }
+        // Поиск студентов по курсу
+        System.out.println("Кто ходит на курс");
+        System.out.println(findStudentsByCourse(students, new Course("Матан")));
     }
 
-    public static String load5DayForecastOrNull() {
-        try {
-            // Сформировали URL для запроса к серверу.
-            URL weatherUrl = new URL(WeatherURL+API_KEY + IS_METRIC);
-            // К серверу постучались.
-            HttpURLConnection urlConnection = (HttpURLConnection) weatherUrl.openConnection();
-            // getResponseCode отправляет запрос к серверу по указанному нами URL, который по факту является GET запросом.
-            if (urlConnection.getResponseCode() == 200) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) { // Как было на предыдущих занятиях, чтобы считать данные из
-                    StringBuilder responseContent = new StringBuilder();                                                  // сети, необходимо открыть Stream для их чтения.
-                    String line = "";                                                                                     // Тут мы используем для работы с сетью BufferedReader.
-                    while ((line = reader.readLine()) != null) { // Считываем данные от сервера до конца (тут нет EOF, как в случае с фалами. Если данных нет от сервера, то метод readLine()
-                        responseContent.append(line);            // вернет null.
-                    }
-                    return responseContent.toString();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
+    public static List<Student> makeStudents() {
+        List<Student> students = Arrays.asList(
+            new Student(
+                "Василий",
+                Arrays.asList(
+                    new Course("Матан"),
+                    new Course("Информатика"),
+                    new Course("Философия"),
+                    new Course("Числовые методы")
+                )
+            ),
+            new Student(
+                "Ирина",
+                Arrays.asList(
+                    new Course("Машинное обучение"),
+                    new Course("Нейронные сети"),
+                    new Course("Матан"),
+                    new Course("Числовые методы"),
+                    new Course("История")
+                )
+            ),
+            new Student(
+                "Анна",
+                Arrays.asList(
+                    new Course("Природоведение"),
+                    new Course("Матан"),
+                    new Course("Естествознание"),
+                    new Course("Числовые методы"),
+                    new Course("История"),
+                    new Course("Обществознание")
+                )
+            ),
+            new Student(
+                "Владимир",
+                Arrays.asList(
+                    new Course("Экономика"),
+                    new Course("Матан"),
+                    new Course("Естествознание"),
+                    new Course("Международное право"),
+                    new Course("История"),
+                    new Course("Обществознание"),
+                    new Course("Английский язык")
+                )
+            )
+        );
 
-        return null;
+        return students;
+    }
+
+    // 1. Написать функцию, принимающую список Student и
+    // возвращающую список уникальных курсов,
+    // на которые подписаны студенты.
+    public static List<Course> filterUniqueCoursesFrom(List<Student> students) {
+        List<Course> courses =
+            students.stream()
+                .flatMap(element -> element.getAllCourses().stream()) // Берем все коллекции курсов с каждого студента
+                .collect(Collectors.toList());                        // и преобразуем в список курсов.
+
+        return courses.stream()
+            .filter(course -> Collections.frequency(courses, course) < 2) // Ищем только те курсы, которые встречаются
+            .collect(Collectors.toList());                                // менее 2 раз в коллекции. Т.е. ищем уникальные.
+    }
+
+    // 2. Написать функцию, принимающую на вход список Student и
+    // возвращающую список из трех самых любознательных
+    // (любознательность определяется количеством курсов).
+    public static List<Student> getTopThreeInquisitiveStudents(List<Student> from) {
+        return from.stream()
+            .sorted(new Comparator<Student>() { // Существуют не только анонимные методы, но и анонимные
+                @Override                                           // классы. В данном случае создан анонимный класс
+                public int compare(Student o1, Student o2) {        // наследник класса Comparator, в котором определено
+                    if (o1.getAllCourses().size() > o2.getAllCourses().size()) {// поведение сравнения.
+                        return -1;
+                    } else if (o1.getAllCourses().size() < o2.getAllCourses().size()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            })
+            .limit(3) // ограничиваемся 3 топовыми студентами
+            .collect(Collectors.toList());
+    }
+
+    // 3. Написать функцию, принимающую на вход список Student
+    // и экземпляр Course, возвращающую список студентов,
+    // которые посещают этот курс.
+    public static List<Student> findStudentsByCourse(List<Student> from, Course course) {
+        return from.stream()
+            .filter(student -> student.getAllCourses().contains(course)) // Найти студента такого, что в его списке
+            .collect(Collectors.toList());                               // курсов значится переданный в метод.
     }
 }
